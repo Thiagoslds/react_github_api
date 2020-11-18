@@ -1,5 +1,7 @@
+//Identifica e determina os caminhos de navegação, linkando um caminho a determinada página
+
 import React from 'react';
-import {Switch, Route} from 'react-router-dom'
+import {Switch, Route} from 'react-router-dom' /*Importa uma Coleção de componentes*/
 
 //importação das páginas
 import Dashboard from '../pages/Dashboard';

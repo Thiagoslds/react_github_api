@@ -4,7 +4,7 @@ import {BrowserRouter} from 'react-router-dom'; //permite a utilização no brow
 import Routes from './routes';
 import GlobalStyles from './styles/global'
 
-/*utilização de arrow function e definição do tipo Function COmponent
+/*utilização de arrow function e definição do tipo Function Component
 Dentro se utiliza as tags do browser e a rota determinada no arquivo routes
 Global styles pode ser utilizado do lado de fora, mas dentro de alguma tag (fragment)*/
 const App: React.FC = () => (

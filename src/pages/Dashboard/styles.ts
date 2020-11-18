@@ -1,5 +1,9 @@
-import styled from 'styled-components';
+import styled, {css} from 'styled-components';
 import {shade} from 'polished';
+
+interface FormProps{
+    hasError: boolean;
+}
 
 export const Title = styled.h1 `
     font-size: 48px;
@@ -10,7 +14,7 @@ export const Title = styled.h1 `
 `;
 
 /*personaliza o campo de digitar o repositorio e o botao*/
-export const Formu = styled.form ` 
+export const Formu = styled.form<FormProps> ` 
     margin-top: 40px;
     max-width: 700px;
 
@@ -23,6 +27,14 @@ export const Formu = styled.form `
         padding: 0 24px; /*posição do texto interno*/
         border-radius: 5px 0 0 5px; /*borda em volta da caixa toda*/
         color: #3a3a3a;
+        border: 2px solid #fff;
+        border-right: 0;
+
+        ${(props) => props.hasError && css ` 
+            border-color: #c53030;
+        `
+
+        }
 
         /*comando para mudar apenas o texto interno*/
         &::placeholder{
@@ -45,6 +57,13 @@ export const Formu = styled.form `
             background: ${shade(0.2, '#04d361')};
         }
     }
+`
+
+
+export const Error = styled.span ` 
+    display: block;
+    color: #c53030;
+    margin-top: 8px;
 `
 
 export const Repositories = styled.div ` 
