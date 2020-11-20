@@ -1,6 +1,7 @@
-import React, {useState, FormEvent} from 'react';
+import React, {useState, FormEvent, useEffect} from 'react';
 import {FiChevronRight} from 'react-icons/fi' //icone de seta para direita
 import api from '../../services/api' //importa a api do github
+import {Link} from 'react-router-dom' //utilização para navegação entre páginas
 
 import logoImg from '../../assets/logo_github.svg'
 
@@ -20,14 +21,35 @@ interface Repository{
 const Dashboard: React.FC = () => {
 
     /*Primeira variavel é a opção padrão e a segunda uma função para atualizar*/
-    const [newRepo, setNewRepo] = useState('');
-    const [inputError, setInputError] = useState('');
-    const [repositories, setRepositories] = useState<Repository[]>([]); /*Utilização da interface
-    como declaração de tipo */
+    const [newRepo, setNewRepo] = useState(''); /*maneira tradicional para armazenar os dados do 
+    formulario*/
+    const [inputError, setInputError] = useState(''); /*usa o estado para verificar o erro, utilização
+    de string no input*/
+    const [repositories, setRepositories] = useState<Repository[]>(()=>{
+        //Puxa os item que serão salvos no repositorio
+        const storagedRepositories = localStorage.getItem('@GitHubExplorer:repositories');
+        //se nao tiver vazio, converte a string de volta para um array
+        if(storagedRepositories) return JSON.parse(storagedRepositories);
 
-    /*Função é disparada quando é submitido um valor no formulário*/
+        return [];
+    }); /*Utilização da interface como declaração de tipo, pois o typescript exige
+     quando se tem um objeto ou array, ja que o tipo padrão é 'never';
+    Alteração do valor padrão inicial (array vazio) para uma função */
+
+    /*Salva no localstorage, para permanecer os dados
+    useeffect dispara uma função sempre que uma variável mudar */
+    useEffect(()=>{
+        localStorage.setItem(
+            '@GitHubExplorer:repositories', //Nome para informação salva, para não conflitar
+            JSON.stringify(repositories)  //Converte o vetor em string json
+        );
+    }, [repositories]);
+
+    /*Função é disparada quando é submitido um valor no formulário
+    Adição de um novo repositorio, consumir a api do github, salvar novo repositorio no estado*/
     async function handleAddRepository(
-        event: FormEvent<HTMLFormElement> //Permite utilização de formulários
+        event: FormEvent<HTMLFormElement> /*evento de submissão (ou outros) de formulário, precisa ter como
+        parametro de tipagem o htmlformelement*/
     ): Promise<void> {
         event.preventDefault(); /*Previne o comportamento padrão (no caso atualização automatica
         do campo para um campo vazio)*/
@@ -42,7 +64,9 @@ const Dashboard: React.FC = () => {
         try{
             const response = await api.get<Repository>(`repos/${newRepo}`); /*retorna o conteudo
             da api, especificado pelo caminho api.github.com/repos/
-            o newRepo contem o valor digitado e capturado pelo formulario */
+            o newRepo contem o valor digitado e capturado pelo formulario; 
+            o parametro de tipagem Repository é do typescript, permite que ao usar o data
+            ele saiba que é do tipo Repository, com todos os valores utilizados da interface*/
 
             const repository = response.data; //apenas o campo data
 
@@ -61,7 +85,9 @@ const Dashboard: React.FC = () => {
             <Title> Explore repositórios no Github </Title>
 
             {/* haserror: atributo declarado na interface em styles, passado como 
-            parametro na exportação do formulario. Dupla exclamação converte para booleano.
+            parametro na exportação do formulario. Serve para estilização, passando propiedades;
+            no caso a borda vermelha;
+            Dupla exclamação converte para booleano (Boolean(inputError)).
             OnSubmit chama a função handle */}
             <Formu hasError={!!inputError} onSubmit={handleAddRepository}>
                 <input 
@@ -75,7 +101,8 @@ const Dashboard: React.FC = () => {
                 <button type="submit">Pesquisar</button>
             </Formu>
 
-            {/* Caso ocorra um erro, o input fica true e é mostrado seu conteudo, no caso 
+            {/* Forma simplificada de if 
+            Caso ocorra um erro, o input fica true e é mostrado seu conteudo, no caso 
             a frase com o erro, como um estilo span*/}
             {inputError && <Error>{inputError}</Error>}
 
@@ -84,7 +111,9 @@ const Dashboard: React.FC = () => {
                 {/*Para cada repositorio que foi salvo, monta a estrutura em html com o estilo css
                 definido em styles. */}
                 {repositories.map((repository)=>(
-                <a key={repository.full_name} href="teste">
+                    /*Link ao invés do 'a', pois o mesmo sempre recarrega a página e pesa
+                    Deve usar o to=, com o caminho desejado, em javascript */
+                <Link key={repository.full_name} to={`/repositories/${repository.full_name} `} > {/*primeiro elemento deve ser uma key unica*/}
                     <img
                         src={repository.owner.avatar_url}
                         alt={repository.owner.login}
@@ -95,12 +124,13 @@ const Dashboard: React.FC = () => {
                     </div>
 
                     <FiChevronRight size={20}/>
-                </a>
+                </Link>
                 )
                 )
                 }             
             </Repositories>
 
+            
         </>
     )
 }

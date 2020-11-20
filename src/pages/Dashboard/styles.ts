@@ -30,7 +30,9 @@ export const Formu = styled.form<FormProps> `
         border: 2px solid #fff;
         border-right: 0;
 
-        ${(props) => props.hasError && css ` 
+        /*utilização de função para usar as propriedades criadas
+        caso tenha um erro, aplica o css, que foi importado (permite utilizar a sintaxe)*/
+        ${(propsF) => propsF.hasError && css ` 
             border-color: #c53030;
         `
 
@@ -59,7 +61,7 @@ export const Formu = styled.form<FormProps> `
     }
 `
 
-
+ 
 export const Error = styled.span ` 
     display: block;
     color: #c53030;

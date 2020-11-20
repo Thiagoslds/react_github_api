@@ -12,7 +12,9 @@ Switch: Garante que apenas uma rota seja exibida */
 const Routes: React.FC = () => (
     <Switch>
         <Route path='/' exact component={Dashboard} /> 
-        <Route path='/repository' component={Repository} />
+        <Route path='/repositories/:repositoryname+' component={Repository} /> {/* caminho dos 
+        repositorios, enviado pelo Link na pagina principal. O '+' diz pra pegar todo o conteudo
+        depois da barra */ }
     </Switch>
 )
 
